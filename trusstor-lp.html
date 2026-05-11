@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trusstor | 現場の「今」が見える。だから、すぐ動ける。</title>
+<meta name="description" content="Trusstorは建設現場の人員配置・工程進捗・安全管理をリアルタイムに可視化する建設DXプラットフォームです。導入初日から現場改善を実感できます。">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --navy: #0a0f2c;
+  --navy-light: #141a3a;
+  --navy-mid: #1c2347;
+  --orange: #e8612d;
+  --orange-hover: #d4551f;
+  --orange-light: rgba(232, 97, 45, 0.08);
+  --orange-glow: rgba(232, 97, 45, 0.15);
+  --white: #ffffff;
+  --gray-50: #f8f9fb;
+  --gray-100: #f0f2f5;
+  --gray-200: #e2e5ea;
+  --gray-300: #c8ccd4;
+  --gray-400: #9ca3af;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --text-primary: #1a1a2e;
+  --text-secondary: #4b5563;
+  --text-light: #9ca3af;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+  --shadow-sm: 0 1px 3px rgba(10,15,44,0.06);
+  --shadow-md: 0 4px 16px rgba(10,15,44,0.08);
+  --shadow-lg: 0 8px 32px rgba(10,15,44,0.12);
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+  color: var(--text-primary);
+  line-height: 1.8;
+  background: var(--white);
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+
+.container { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+
+/* ============================================
+   HEADER
+   ============================================ */
+.header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  transition: var(--transition);
+}
+.header.scrolled { box-shadow: var(--shadow-sm); }
+.header-inner {
+  max-width: 1080px; margin: 0 auto; padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.logo {
+  font-size: 22px; font-weight: 800; color: var(--navy);
+  letter-spacing: -0.5px;
+}
+.logo span { color: var(--orange); }
+.header-nav { display: flex; align-items: center; gap: 28px; }
+.header-nav a {
+  font-size: 14px; color: var(--text-secondary); font-weight: 500;
+  transition: var(--transition);
+}
+.header-nav a:hover { color: var(--navy); }
+.header-cta { display: flex; gap: 10px; align-items: center; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 600; border-radius: var(--radius-sm);
+  padding: 10px 24px; cursor: pointer; transition: var(--transition);
+  border: none; white-space: nowrap;
+}
+.btn-primary {
+  background: var(--orange); color: var(--white);
+  box-shadow: 0 2px 8px rgba(232,97,45,0.3);
+}
+.btn-primary:hover {
+  background: var(--orange-hover);
+  box-shadow: 0 4px 16px rgba(232,97,45,0.4);
+  transform: translateY(-1px);
+}
+.btn-outline {
+  background: transparent; color: var(--orange);
+  border: 1.5px solid var(--orange);
+}
+.btn-outline:hover {
+  background: var(--orange-light);
+}
+.btn-ghost {
+  background: rgba(255,255,255,0.12); color: var(--white);
+  border: 1.5px solid rgba(255,255,255,0.25);
+}
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.2);
+}
+.btn-lg { padding: 14px 36px; font-size: 16px; border-radius: var(--radius); }
+.btn-icon { margin-left: 6px; transition: transform 0.2s; }
+.btn:hover .btn-icon { transform: translateX(3px); }
+
+/* ============================================
+   HERO
+   ============================================ */
+.hero {
+  padding: 140px 0 100px;
+  background: linear-gradient(165deg, var(--navy) 0%, var(--navy-light) 55%, var(--navy-mid) 100%);
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -50%; right: -20%; width: 80%; height: 200%;
+  background: radial-gradient(ellipse, rgba(232,97,45,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232,97,45,0.3), transparent);
+}
+.hero-inner {
+  max-width: 1080px; margin: 0 auto; padding: 0 32px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(232,97,45,0.12); border: 1px solid rgba(232,97,45,0.2);
+  border-radius: 100px; padding: 6px 16px;
+  font-size: 12px; font-weight: 600; color: var(--orange);
+  letter-spacing: 1px; margin-bottom: 24px;
+}
+.hero-badge::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--orange); animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.hero h1 {
+  font-size: 42px; font-weight: 800; color: var(--white);
+  line-height: 1.35; letter-spacing: -0.5px; margin-bottom: 20px;
+}
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--orange) 0%, #f59e0b 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: 17px; color: rgba(255,255,255,0.7); line-height: 1.9;
+  margin-bottom: 36px;
+}
+.hero-buttons { display: flex; gap: 14px; flex-wrap: wrap; }
+
+/* Dashboard mockup */
+.hero-visual {
+  background: var(--navy-mid);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-lg); padding: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  position: relative;
+}
+.dashboard-mock {
+  background: #111833;
+  border-radius: var(--radius);
+  padding: 24px; min-height: 320px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.dash-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.dash-title { color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 600; }
+.dash-status {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: #34d399;
+}
+.dash-status::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: #34d399;
+}
+.dash-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.dash-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-sm); padding: 14px;
+}
+.dash-card-label { font-size: 10px; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+.dash-card-value { font-size: 22px; font-weight: 700; color: var(--white); }
+.dash-card-value.green { color: #34d399; }
+.dash-card-value.orange { color: var(--orange); }
+.dash-card-sub { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+.dash-map {
+  flex: 1; background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-sm); padding: 16px;
+  display: flex; flex-direction: column; gap: 8px; min-height: 120px;
+}
+.dash-map-title { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 600; }
+.dash-map-dots { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; flex: 1; }
+.map-dot {
+  width: 10px; height: 10px; border-radius: 50%; position: relative;
+}
+.map-dot::after {
+  content: ''; position: absolute; inset: -4px; border-radius: 50%;
+  border: 1px solid; opacity: 0.3;
+}
+.map-dot.worker { background: #60a5fa; }
+.map-dot.worker::after { border-color: #60a5fa; }
+.map-dot.equipment { background: #f59e0b; }
+.map-dot.equipment::after { border-color: #f59e0b; }
+.map-dot.alert { background: #ef4444; }
+.map-dot.alert::after { border-color: #ef4444; }
+.dash-legend {
+  display: flex; gap: 16px; font-size: 10px; color: rgba(255,255,255,0.4);
+}
+.dash-legend span { display: flex; align-items: center; gap: 4px; }
+.dash-legend span::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+}
+.legend-worker::before { background: #60a5fa; }
+.legend-equip::before { background: #f59e0b; }
+.legend-alert::before { background: #ef4444; }
+
+.hero-note {
+  text-align: center; padding: 20px 32px 0;
+  font-size: 11px; color: rgba(255,255,255,0.35);
+}
+
+/* ============================================
+   SECTION COMMON
+   ============================================ */
+section { padding: 100px 0; }
+.section-label {
+  display: inline-block;
+  font-size: 12px; font-weight: 700; letter-spacing: 3px;
+  color: var(--orange); margin-bottom: 12px; text-transform: uppercase;
+}
+.section-title {
+  font-size: 30px; font-weight: 800; line-height: 1.4;
+  color: var(--text-primary); margin-bottom: 16px;
+}
+.section-desc {
+  font-size: 16px; color: var(--text-secondary); line-height: 1.8;
+  max-width: 640px;
+}
+.text-center { text-align: center; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+/* ============================================
+   ISSUES
+   ============================================ */
+.issues { background: var(--white); }
+.issues-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 20px; margin: 48px 0 40px;
+}
+.issue-card {
+  background: var(--gray-50); border: 1px solid var(--gray-200);
+  border-radius: var(--radius); padding: 28px 20px;
+  text-align: center; transition: var(--transition);
+}
+.issue-card:hover {
+  border-color: var(--orange);
+  background: var(--orange-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.issue-icon {
+  width: 52px; height: 52px; margin: 0 auto 16px;
+  background: var(--orange-light); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+}
+.issue-card h3 {
+  font-size: 15px; font-weight: 700; margin-bottom: 8px;
+  line-height: 1.5; color: var(--text-primary);
+}
+.issue-card p {
+  font-size: 13px; color: var(--text-secondary); line-height: 1.7;
+}
+.issues-bridge {
+  text-align: center; font-size: 17px; color: var(--text-secondary);
+  line-height: 1.9;
+}
+.issues-bridge strong {
+  color: var(--text-primary);
+}
+
+/* ============================================
+   SOLUTION
+   ============================================ */
+.solution {
+  background: var(--gray-50);
+  border-top: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-200);
+}
+.steps {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0; margin: 48px 0; position: relative;
+}
+.steps::before {
+  content: ''; position: absolute; top: 28px;
+  left: 14%; right: 14%; height: 2px;
+  background: repeating-linear-gradient(90deg, var(--gray-300) 0, var(--gray-300) 8px, transparent 8px, transparent 14px);
+}
+.step { text-align: center; position: relative; z-index: 1; }
+.step-num {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--white); border: 2px solid var(--orange);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800; color: var(--orange);
+  margin: 0 auto 16px;
+  box-shadow: var(--shadow-sm);
+}
+.step h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.step p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; padding: 0 8px; }
+
+.values {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 20px; margin-top: 48px;
+}
+.value-card {
+  background: var(--white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius); padding: 32px 24px;
+  text-align: center; transition: var(--transition);
+  position: relative; overflow: hidden;
+}
+.value-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--orange), #f59e0b);
+  opacity: 0; transition: var(--transition);
+}
+.value-card:hover::before { opacity: 1; }
+.value-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.value-icon {
+  font-size: 32px; margin-bottom: 14px;
+}
+.value-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.value-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+
+/* ============================================
+   FEATURES
+   ============================================ */
+.features { background: var(--white); }
+.feature-list { margin-top: 56px; }
+.feature-item {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; align-items: center;
+  padding: 48px 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.feature-item:last-child { border-bottom: none; }
+.feature-item.reverse .feature-text { order: 2; }
+.feature-item.reverse .feature-visual { order: 1; }
+.feature-tag {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  color: var(--orange); background: var(--orange-light);
+  padding: 4px 12px; border-radius: 100px; margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+.feature-text h3 {
+  font-size: 24px; font-weight: 800; margin-bottom: 14px;
+  line-height: 1.4;
+}
+.feature-text p {
+  font-size: 15px; color: var(--text-secondary); line-height: 1.9;
+  margin-bottom: 16px;
+}
+.feature-points {
+  list-style: none; display: flex; flex-direction: column; gap: 8px;
+}
+.feature-points li {
+  font-size: 14px; color: var(--text-secondary);
+  padding-left: 22px; position: relative; line-height: 1.7;
+}
+.feature-points li::before {
+  content: '✓'; position: absolute; left: 0; color: var(--orange); font-weight: 700;
+}
+.feature-visual {
+  background: var(--gray-50); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg); padding: 32px;
+  min-height: 260px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12px;
+}
+.feature-screen {
+  width: 100%; background: var(--white); border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-200); padding: 16px;
+}
+.screen-bar {
+  display: flex; gap: 4px; margin-bottom: 12px;
+}
+.screen-bar span {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--gray-300);
+}
+.screen-rows { display: flex; flex-direction: column; gap: 8px; }
+.screen-row {
+  display: flex; gap: 8px; align-items: center;
+}
+.screen-block {
+  height: 10px; border-radius: 4px; background: var(--gray-200);
+}
+.screen-block.w1 { width: 30%; }
+.screen-block.w2 { width: 50%; }
+.screen-block.w3 { width: 20%; }
+.screen-block.w4 { width: 40%; }
+.screen-block.accent { background: var(--orange-glow); }
+.screen-block.green { background: rgba(52,211,153,0.2); }
+.screen-badge-row { display: flex; gap: 8px; margin-top: 4px; }
+.screen-badge {
+  font-size: 10px; padding: 3px 10px; border-radius: 100px;
+  background: var(--gray-100); color: var(--text-secondary);
+}
+.feature-caption {
+  font-size: 12px; color: var(--text-light); text-align: center;
+}
+
+/* ============================================
+   IMPACT
+   ============================================ */
+.impact {
+  background: var(--navy);
+  color: var(--white);
+}
+.impact .section-label { color: var(--orange); }
+.impact .section-title { color: var(--white); }
+.impact .section-desc { color: rgba(255,255,255,0.6); }
+.impact-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 20px; margin: 48px 0 20px;
+}
+.impact-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius); padding: 28px 20px;
+  text-align: center; transition: var(--transition);
+}
+.impact-card:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(232,97,45,0.3);
+  transform: translateY(-2px);
+}
+.impact-num {
+  font-size: 44px; font-weight: 800;
+  background: linear-gradient(135deg, var(--orange), #f59e0b);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2; margin-bottom: 8px;
+}
+.impact-label { font-size: 14px; color: rgba(255,255,255,0.8); font-weight: 600; margin-bottom: 4px; }
+.impact-sub { font-size: 11px; color: rgba(255,255,255,0.35); }
+.impact-note {
+  text-align: center; font-size: 12px; color: rgba(255,255,255,0.3);
+  margin-top: 8px;
+}
+
+/* ============================================
+   COMPARISON
+   ============================================ */
+.comparison { background: var(--white); }
+.compare-table {
+  width: 100%; border-collapse: collapse; margin: 40px 0 24px;
+  font-size: 14px;
+}
+.compare-table th, .compare-table td {
+  padding: 14px 16px; text-align: center;
+  border-bottom: 1px solid var(--gray-100);
+}
+.compare-table th {
+  font-size: 12px; font-weight: 700; color: var(--text-secondary);
+  background: var(--gray-50); letter-spacing: 0.5px;
+}
+.compare-table th:first-child,
+.compare-table td:first-child {
+  text-align: left; font-weight: 600;
+}
+.compare-table th:last-child {
+  background: var(--orange-light); color: var(--orange);
+}
+.compare-table td:last-child {
+  color: var(--orange); font-weight: 700;
+}
+.compare-table .circle { font-size: 16px; }
+.compare-table .highlight-col {
+  background: var(--orange-light);
+}
+.compare-catch {
+  text-align: center; font-size: 18px; font-weight: 700;
+  color: var(--text-primary); padding: 8px 0;
+}
+.compare-catch span {
+  color: var(--orange);
+}
+
+/* ============================================
+   ONBOARDING
+   ============================================ */
+.onboarding {
+  background: var(--gray-50);
+  border-top: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-200);
+}
+.onboard-steps {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px; margin: 48px 0 24px;
+  position: relative;
+}
+.onboard-step {
+  background: var(--white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius); padding: 28px 20px;
+  text-align: center; transition: var(--transition);
+  position: relative;
+}
+.onboard-step:hover { border-color: var(--orange); box-shadow: var(--shadow-md); }
+.onboard-step::after {
+  content: '→'; position: absolute; right: -14px; top: 50%;
+  transform: translateY(-50%); color: var(--gray-300); font-size: 18px;
+}
+.onboard-step:last-child::after { display: none; }
+.onboard-num {
+  font-size: 11px; font-weight: 700; color: var(--orange);
+  letter-spacing: 2px; margin-bottom: 10px;
+}
+.onboard-step h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.onboard-step p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.onboard-note {
+  text-align: center; font-size: 15px; color: var(--text-secondary);
+}
+.onboard-note strong { color: var(--text-primary); }
+
+/* ============================================
+   FAQ
+   ============================================ */
+.faq { background: var(--white); }
+.faq-list {
+  max-width: 720px; margin: 40px auto 0;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.faq-item {
+  border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
+  overflow: hidden; transition: var(--transition);
+}
+.faq-item.active { border-color: var(--orange); box-shadow: var(--shadow-sm); }
+.faq-q {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 24px; cursor: pointer; gap: 16px;
+  background: var(--white); transition: var(--transition);
+  font-size: 15px; font-weight: 600;
+}
+.faq-q:hover { background: var(--gray-50); }
+.faq-toggle {
+  width: 28px; height: 28px; flex-shrink: 0;
+  border-radius: 50%; background: var(--gray-100);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--text-secondary);
+  transition: var(--transition);
+}
+.faq-item.active .faq-toggle {
+  background: var(--orange); color: var(--white);
+  transform: rotate(45deg);
+}
+.faq-a {
+  max-height: 0; overflow: hidden; transition: max-height 0.35s ease;
+}
+.faq-a-inner {
+  padding: 0 24px 20px;
+  font-size: 14px; color: var(--text-secondary); line-height: 1.9;
+}
+
+/* ============================================
+   CTA
+   ============================================ */
+.cta-section {
+  background: linear-gradient(165deg, var(--navy) 0%, var(--navy-light) 100%);
+  padding: 80px 0;
+  position: relative; overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute; top: -50%; left: 50%; width: 100%; height: 200%;
+  background: radial-gradient(ellipse, rgba(232,97,45,0.08) 0%, transparent 70%);
+  transform: translateX(-50%); pointer-events: none;
+}
+.cta-inner {
+  max-width: 560px; margin: 0 auto; text-align: center;
+  position: relative; z-index: 1;
+}
+.cta-section h2 {
+  font-size: 28px; font-weight: 800; color: var(--white);
+  margin-bottom: 14px; line-height: 1.4;
+}
+.cta-section p {
+  font-size: 15px; color: rgba(255,255,255,0.6);
+  margin-bottom: 36px; line-height: 1.8;
+}
+.cta-form {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-lg); padding: 32px;
+}
+.cta-form-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-bottom: 12px;
+}
+.cta-form label {
+  display: block; font-size: 12px; color: rgba(255,255,255,0.5);
+  margin-bottom: 5px; font-weight: 500;
+}
+.cta-form input {
+  width: 100%; padding: 11px 14px; border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06);
+  color: var(--white); font-size: 14px; outline: none;
+  transition: var(--transition);
+}
+.cta-form input::placeholder { color: rgba(255,255,255,0.25); }
+.cta-form input:focus {
+  border-color: var(--orange); background: rgba(255,255,255,0.08);
+}
+.cta-form-full { margin-bottom: 20px; }
+.cta-submit {
+  width: 100%; padding: 14px; border: none; border-radius: var(--radius-sm);
+  background: var(--orange); color: var(--white);
+  font-size: 16px; font-weight: 700; cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 16px rgba(232,97,45,0.4);
+}
+.cta-submit:hover {
+  background: var(--orange-hover);
+  box-shadow: 0 6px 24px rgba(232,97,45,0.5);
+  transform: translateY(-1px);
+}
+.cta-privacy {
+  font-size: 11px; color: rgba(255,255,255,0.3);
+  margin-top: 12px;
+}
+
+/* Secondary CTA */
+.cta-secondary {
+  padding: 64px 0;
+  background: var(--gray-50);
+  border-top: 1px solid var(--gray-200);
+}
+.cta-options {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 20px; margin-top: 32px;
+}
+.cta-option {
+  background: var(--white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius); padding: 32px 24px;
+  text-align: center; transition: var(--transition);
+}
+.cta-option:hover {
+  border-color: var(--orange); box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.cta-option-icon {
+  font-size: 28px; margin-bottom: 12px;
+}
+.cta-option h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.cta-option p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer {
+  background: var(--navy); padding: 48px 0 32px;
+  color: rgba(255,255,255,0.5);
+}
+.footer-inner {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-logo { font-size: 20px; font-weight: 800; color: var(--white); }
+.footer-logo span { color: var(--orange); }
+.footer-info { font-size: 12px; line-height: 1.8; }
+.footer-links {
+  display: flex; gap: 20px; font-size: 12px;
+}
+.footer-links a:hover { color: var(--white); }
+.footer-copy {
+  text-align: center; font-size: 11px; color: rgba(255,255,255,0.25);
+  margin-top: 32px; padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 900px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+  .hero h1 { font-size: 32px; }
+  .issues-grid { grid-template-columns: repeat(2, 1fr); }
+  .steps { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .steps::before { display: none; }
+  .values { grid-template-columns: 1fr; }
+  .feature-item { grid-template-columns: 1fr; gap: 24px; }
+  .feature-item.reverse .feature-text { order: 1; }
+  .feature-item.reverse .feature-visual { order: 2; }
+  .impact-grid { grid-template-columns: repeat(2, 1fr); }
+  .compare-table { font-size: 12px; }
+  .onboard-steps { grid-template-columns: repeat(2, 1fr); }
+  .onboard-step::after { display: none; }
+  .cta-options { grid-template-columns: 1fr; }
+  .header-nav { display: none; }
+  .footer-inner { flex-direction: column; gap: 20px; text-align: center; }
+}
+@media (max-width: 600px) {
+  .container { padding: 0 20px; }
+  section { padding: 64px 0; }
+  .hero { padding: 110px 0 64px; }
+  .hero h1 { font-size: 26px; }
+  .hero-sub { font-size: 15px; }
+  .section-title { font-size: 24px; }
+  .issues-grid { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; }
+  .impact-grid { grid-template-columns: 1fr; }
+  .impact-num { font-size: 36px; }
+  .onboard-steps { grid-template-columns: 1fr; }
+  .cta-form-row { grid-template-columns: 1fr; }
+  .dash-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header" id="header">
+  <div class="header-inner">
+    <a href="#" class="logo">Trusst<span>o</span>r</a>
+    <nav class="header-nav">
+      <a href="#features">機能紹介</a>
+      <a href="#impact">導入効果</a>
+      <a href="#faq">よくある質問</a>
+    </nav>
+    <div class="header-cta">
+      <a href="#cta" class="btn btn-outline">資料ダウンロード</a>
+      <a href="#contact" class="btn btn-primary">無料デモ予約<span class="btn-icon">→</span></a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge">建設DXプラットフォーム</div>
+      <h1>現場の<em>「今」</em>が見える。<br>だから、すぐ動ける。</h1>
+      <p class="hero-sub">
+        人員配置・工程進捗・安全管理──<br>
+        Trusstorは、建設現場のあらゆる情報を<br>
+        リアルタイムに可視化し、意思決定を加速します。
+      </p>
+      <div class="hero-buttons">
+        <a href="#cta" class="btn btn-primary btn-lg">まずは資料を見る<span class="btn-icon">→</span></a>
+        <a href="#contact" class="btn btn-ghost btn-lg">無料デモ予約</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="dashboard-mock">
+        <div class="dash-header">
+          <span class="dash-title">新宿駅前再開発 ─ 現場ダッシュボード</span>
+          <span class="dash-status">リアルタイム</span>
+        </div>
+        <div class="dash-grid">
+          <div class="dash-card">
+            <div class="dash-card-label">現場作業員</div>
+            <div class="dash-card-value">128</div>
+            <div class="dash-card-sub">名が稼働中</div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-label">工程進捗率</div>
+            <div class="dash-card-value green">87%</div>
+            <div class="dash-card-sub">予定比 +2.3%</div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-label">安全アラート</div>
+            <div class="dash-card-value orange">0</div>
+            <div class="dash-card-sub">本日のインシデント</div>
+          </div>
+        </div>
+        <div class="dash-map">
+          <div class="dash-map-title">フロアマップ ─ B2F 〜 12F</div>
+          <div class="dash-map-dots">
+            <span class="map-dot worker"></span>
+            <span class="map-dot worker"></span>
+            <span class="map-dot equipment"></span>
+            <span class="map-dot worker"></span>
+            <span class="map-dot worker"></span>
+            <span class="map-dot equipment"></span>
+            <span class="map-dot worker"></span>
+            <span class="map-dot alert"></span>
+            <span class="map-dot worker"></span>
+            <span class="map-dot worker"></span>
+            <span class="map-dot equipment"></span>
+            <span class="map-dot worker"></span>
+          </div>
+          <div class="dash-legend">
+            <span class="legend-worker">作業員</span>
+            <span class="legend-equip">重機</span>
+            <span class="legend-alert">要確認</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="hero-note">※ 上記は日本語版ダッシュボードのイメージです</p>
+</section>
+
+<!-- ISSUES -->
+<section class="issues" id="issues">
+  <div class="container">
+    <div class="text-center">
+      <span class="section-label">Issues</span>
+      <h2 class="section-title">こんな課題、放置していませんか？</h2>
+    </div>
+    <div class="issues-grid">
+      <div class="issue-card">
+        <div class="issue-icon">📞</div>
+        <h3>「今どうなってる？」の<br>電話確認が止まらない</h3>
+        <p>現場の状況確認のための電話が1日に何度も発生し、管理者の時間を奪っている</p>
+      </div>
+      <div class="issue-card">
+        <div class="issue-icon">👷</div>
+        <h3>誰がどこにいるか<br>わからない</h3>
+        <p>作業員の配置が把握できず、現場巡回の効率が悪い。人を探す時間が無駄になっている</p>
+      </div>
+      <div class="issue-card">
+        <div class="issue-icon">⚠️</div>
+        <h3>安全管理が<br>事後対応になりがち</h3>
+        <p>危険エリアへの無資格者の立入に気づけない。ヒヤリハットが減らない</p>
+      </div>
+      <div class="issue-card">
+        <div class="issue-icon">📊</div>
+        <h3>工程遅延に<br>気づくのが遅い</h3>
+        <p>計画と実績のズレが可視化されておらず、遅延発覚時にはすでに手戻りコストが発生</p>
+      </div>
+    </div>
+    <p class="issues-bridge">
+      人手不足が深刻化する建設業界で、<br>
+      <strong>「位置がわかる」だけでは、もう足りません。</strong>
+    </p>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section class="solution" id="solution">
+  <div class="container">
+    <div class="text-center">
+      <span class="section-label">Solution</span>
+      <h2 class="section-title">現場をリアルタイムに可視化する<br>建設IoTプラットフォーム</h2>
+      <p class="section-desc mx-auto">Trusstorは、バッジとビーコンだけで現場のすべてを把握。<br>既存業務を変えずに、導入初日から成果を実感できます。</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>バッジを配布</h3>
+        <p>既存業務を変えず<br>ゼロ侵襲で導入</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>リアルタイム監視</h3>
+        <p>人員・工程・安全を<br>一画面で管理</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>データが蓄積</h3>
+        <p>使うほどスマートに<br>改善サイクルが回る</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3>経営にも効く</h3>
+        <p>複数現場を横断管理<br>意思決定を加速</p>
+      </div>
+    </div>
+    <div class="values">
+      <div class="value-card">
+        <div class="value-icon">💰</div>
+        <h3>コスト削減</h3>
+        <p>巡回時間の30%短縮、人件費の最適化、日報自動化による管理工数の大幅削減を実現します。</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🛡️</div>
+        <h3>安全性向上</h3>
+        <p>リアルタイム安全アラート、無資格者の立入制限、緊急時の即時対応で現場の安全を守ります。</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">⚡</div>
+        <h3>生産性向上</h3>
+        <p>工程と実績を自動同期し遅延を早期検知。計画精度を高め、手戻りコストを最小化します。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="text-center">
+      <span class="section-label">Features</span>
+      <h2 class="section-title">現場が求める機能を、過不足なく</h2>
+      <p class="section-desc mx-auto">高機能すぎて使いこなせない、シンプルすぎて効果がない──<br>Trusstorは現場に本当に必要な機能を、直感的なUIで提供します。</p>
+    </div>
+    <div class="feature-list">
+      <!-- Feature 1 -->
+      <div class="feature-item">
+        <div class="feature-text">
+          <span class="feature-tag">リアルタイム可視化</span>
+          <h3>現場モニタリング</h3>
+          <p>人・モノ・進捗をひと目で把握できるダッシュボード。「今どうなってる？」の電話確認がなくなります。</p>
+          <ul class="feature-points">
+            <li>フロアマップ上で作業員・重機の位置をリアルタイム表示</li>
+            <li>カスタマイズ可能なプロジェクトダッシュボード</li>
+            <li>本社から複数現場の状況を一括把握</li>
+          </ul>
+        </div>
+        <div class="feature-visual">
+          <div class="feature-screen">
+            <div class="screen-bar"><span></span><span></span><span></span></div>
+            <div class="screen-rows">
+              <div class="screen-row"><div class="screen-block w2"></div><div class="screen-block w3 accent"></div></div>
+              <div class="screen-row"><div class="screen-block w1"></div><div class="screen-block w4"></div><div class="screen-block w3"></div></div>
+              <div class="screen-row"><div class="screen-block w4 green"></div><div class="screen-block w1"></div></div>
+              <div class="screen-row"><div class="screen-block w2"></div><div class="screen-block w3 accent"></div></div>
+            </div>
+            <div class="screen-badge-row">
+              <span class="screen-badge">作業員 128名</span>
+              <span class="screen-badge">重機 12台</span>
+              <span class="screen-badge">進捗 87%</span>
+            </div>
+          </div>
+          <span class="feature-caption">ダッシュボード画面イメージ</span>
+        </div>
+      </div>
+      <!-- Feature 2 -->
+      <div class="feature-item reverse">
+        <div class="feature-text">
+          <span class="feature-tag">工程管理</span>
+          <h3>動的ワークプラン＆自動日報</h3>
+          <p>既存の工程管理ツールと連携し、計画と実績を常に同期。日報は自動生成されるため、管理者は月21時間を削減できます。</p>
+          <ul class="feature-points">
+            <li>MS Project / Primavera / Procore等とフリクションレスに連携</li>
+            <li>計画 vs 実績の可視化で遅延を即検知</li>
+            <li>自動生成される準拠性の高い日報</li>
+          </ul>
+        </div>
+        <div class="feature-visual">
+          <div class="feature-screen">
+            <div class="screen-bar"><span></span><span></span><span></span></div>
+            <div class="screen-rows">
+              <div class="screen-row"><div class="screen-block w4 accent"></div></div>
+              <div class="screen-row"><div class="screen-block w2 green"></div><div class="screen-block w1"></div></div>
+              <div class="screen-row"><div class="screen-block w3 accent"></div><div class="screen-block w2"></div></div>
+              <div class="screen-row"><div class="screen-block w1 green"></div></div>
+            </div>
+            <div class="screen-badge-row">
+              <span class="screen-badge">計画</span>
+              <span class="screen-badge">実績</span>
+              <span class="screen-badge">差異 +2.3%</span>
+            </div>
+          </div>
+          <span class="feature-caption">工程管理画面イメージ</span>
+        </div>
+      </div>
+      <!-- Feature 3 -->
+      <div class="feature-item">
+        <div class="feature-text">
+          <span class="feature-tag">安全管理</span>
+          <h3>安全アラート＆インシデント管理</h3>
+          <p>安全違反のリアルタイム通知、作業員の緊急ボタン、無資格者の自動検知で、事故対応を「事後」から「事前」に変えます。</p>
+          <ul class="feature-points">
+            <li>危険エリアへの無資格者立入を自動ブロック</li>
+            <li>作業員の緊急ボタン → 最寄り管理者へ即通知</li>
+            <li>安全関連の資格・証明書の期限管理</li>
+          </ul>
+        </div>
+        <div class="feature-visual">
+          <div class="feature-screen">
+            <div class="screen-bar"><span></span><span></span><span></span></div>
+            <div class="screen-rows">
+              <div class="screen-row"><div class="screen-block w2" style="background:rgba(239,68,68,0.15)"></div><div class="screen-block w3"></div></div>
+              <div class="screen-row"><div class="screen-block w4 green"></div></div>
+              <div class="screen-row"><div class="screen-block w1" style="background:rgba(239,68,68,0.15)"></div><div class="screen-block w2 green"></div></div>
+              <div class="screen-row"><div class="screen-block w3 green"></div><div class="screen-block w1"></div></div>
+            </div>
+            <div class="screen-badge-row">
+              <span class="screen-badge">アラート 0件</span>
+              <span class="screen-badge">安全スコア 96</span>
+            </div>
+          </div>
+          <span class="feature-caption">安全管理画面イメージ</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT -->
+<section class="impact" id="impact">
+  <div class="container">
+    <div class="text-center">
+      <span class="section-label">Impact</span>
+      <h2 class="section-title">導入による改善効果</h2>
+      <p class="section-desc mx-auto">Trusstorの導入企業が実際に計測した効果です。</p>
+    </div>
+    <div class="impact-grid">
+      <div class="impact-card">
+        <div class="impact-num">30%</div>
+        <div class="impact-label">巡回時間の短縮</div>
+        <div class="impact-sub">Walkaround optimization</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">21h</div>
+        <div class="impact-label">月間の日報工数削減</div>
+        <div class="impact-sub">Automated daily logs</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">10%</div>
+        <div class="impact-label">人件費の最適化</div>
+        <div class="impact-sub">Worker management</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">2x</div>
+        <div class="impact-label">意思決定の高速化</div>
+        <div class="impact-sub">Executive dashboard</div>
+      </div>
+    </div>
+    <p class="impact-note">※ 海外導入企業の実績値に基づく参考数値です</p>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="comparison" id="comparison">
+  <div class="container">
+    <div class="text-center">
+      <span class="section-label">Why Trusstor</span>
+      <h2 class="section-title">他ツールとの違い</h2>
+    </div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>比較項目</th>
+          <th>高精度GPS型</th>
+          <th>大手ゼネコン型</th>
+          <th>キャリア系</th>
+          <th>Trusstor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>リアルタイム可視化</td>
+          <td class="circle">△</td>
+          <td class="circle">◯</td>
+          <td class="circle">◯</td>
+          <td class="circle highlight-col">◎</td>
+        </tr>
+        <tr>
+          <td>工程管理連携</td>
+          <td class="circle">✕</td>
+          <td class="circle">◯</td>
+          <td class="circle">✕</td>
+          <td class="circle highlight-col">◎</td>
+        </tr>
+        <tr>
+          <td>安全管理アラート</td>
+          <td class="circle">✕</td>
+          <td class="circle">◯</td>
+          <td class="circle">△</td>
+          <td class="circle highlight-col">◎</td>
+        </tr>
+        <tr>
+          <td>導入ハードル</td>
+          <td>低い</td>
+          <td>非常に高い</td>
+          <td>低い</td>
+          <td class="highlight-col">低い</td>
+        </tr>
+        <tr>
+          <td>複数現場の横断管理</td>
+          <td class="circle">✕</td>
+          <td class="circle">◯</td>
+          <td class="circle">△</td>
+          <td class="circle highlight-col">◎</td>
+        </tr>
+        <tr>
+          <td>コストパフォーマンス</td>
+          <td class="circle">◯</td>
+          <td class="circle">△</td>
+          <td class="circle">◯</td>
+          <td class="circle highlight-col">◎</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="compare-catch">高機能すぎず、シンプルすぎない──<span>ちょうどいいDX。</span></p>
+  </div>
+</section>
+
+<!-- ONBOARDING -->
+<section class="onboarding" id="onboarding">
+  <div class="container">
+    <div class="text-center">
+      <span class="section-label">Onboarding</span>
+      <h2 class="section-title">最短1日で運用開始</h2>
+      <p class="section-desc mx-auto">大がかりなシステム構築は不要。既存業務を変えることなく、すぐに使い始められます。</p>
+    </div>
+    <div class="onboard-steps">
+      <div class="onboard-step">
+        <div class="onboard-num">STEP 01</div>
+        <h3>お問い合わせ</h3>
+        <p>現場の課題やご要望を<br>ヒアリングします</p>
+      </div>
+      <div class="onboard-step">
+        <div class="onboard-num">STEP 02</div>
+        <h3>無料デモ体験</h3>
+        <p>実際の画面で操作感を<br>ご確認いただけます</p>
+      </div>
+      <div class="onboard-step">
+        <div class="onboard-num">STEP 03</div>
+        <h3>バッジ配布</h3>
+        <p>工事不要・設定不要<br>届いたその日から使える</p>
+      </div>
+      <div class="onboard-step">
+        <div class="onboard-num">STEP 04</div>
+        <h3>運用開始</h3>
+        <p>初日からダッシュボードで<br>現場を可視化</p>
+      </div>
+    </div>
+    <p class="onboard-note">専任の<strong>日本語カスタマーサクセス</strong>チームが導入から運用まで伴走します。</p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="text-center">
+      <span class="section-label">FAQ</span>
+      <h2 class="section-title">よくあるご質問</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>導入にはどれくらいの期間がかかりますか？</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">最短1日で運用を開始できます。バッジとビーコンを設置するだけで、大がかりな工事やシステム連携は不要です。既存の業務フローを変えることなく導入いただけます。</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>既存の工程管理ツールと連携できますか？</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">はい。Microsoft Project、Oracle Primavera、Procoreなど主要な工程管理ツールとフリクションレスに連携可能です。既存のワークフローをそのまま活かしながらTrusstorの可視化機能を追加できます。</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>海外製品ですが、日本語でのサポートはありますか？</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">日本正規代理店である株式会社ダイテックが、導入支援から運用サポートまで日本語で対応いたします。UIも日本語に完全対応しており、マニュアルやサポート窓口もすべて日本語でご利用いただけます。</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>現場のネット環境が不安定でも使えますか？</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Trusstorは低帯域環境でも動作するよう設計されています。ビーコンによるローカル通信で位置データを収集するため、常時高速インターネット接続は必要ありません。通信が回復した際にデータが自動同期されます。</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>小規模な現場でも導入メリットはありますか？</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">作業員数名の現場から数百名規模の大型現場まで、スケールに応じた活用が可能です。小規模現場でも安全管理の自動化や日報生成の効率化など、すぐに実感できるメリットがあります。</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>プライバシーの問題はありませんか？</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Trusstorのトラッキングはカメラを使用せず、ビーコンによる位置情報のみを取得するため、プライバシーの問題は最小限に抑えられています。取得するデータは業務に必要な位置情報に限定されています。</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="cta">
+  <div class="container">
+    <div class="cta-inner">
+      <h2>まずは3分で読める<br>サービス資料をご覧ください</h2>
+      <p>Trusstorの機能・導入効果・料金の概要がわかる<br>サービス紹介資料を無料でダウンロードいただけます。</p>
+      <div class="cta-form">
+        <div class="cta-form-row">
+          <div>
+            <label>会社名</label>
+            <input type="text" placeholder="例：○○建設株式会社">
+          </div>
+          <div>
+            <label>お名前</label>
+            <input type="text" placeholder="例：山田 太郎">
+          </div>
+        </div>
+        <div class="cta-form-full">
+          <label>メールアドレス</label>
+          <input type="email" placeholder="例：yamada@example.co.jp">
+        </div>
+        <button class="cta-submit" type="button">無料で資料をダウンロード →</button>
+        <p class="cta-privacy">送信いただいた情報は<a href="#" style="text-decoration:underline;">プライバシーポリシー</a>に基づき適切に管理いたします。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECONDARY CTA -->
+<section class="cta-secondary" id="contact">
+  <div class="container">
+    <div class="text-center">
+      <h2 class="section-title">もう少し詳しく知りたい方へ</h2>
+    </div>
+    <div class="cta-options">
+      <div class="cta-option">
+        <div class="cta-option-icon">📞</div>
+        <h3>電話で相談する</h3>
+        <p>平日 9:00〜18:00<br>お気軽にお電話ください</p>
+      </div>
+      <div class="cta-option">
+        <div class="cta-option-icon">💬</div>
+        <h3>お問い合わせ</h3>
+        <p>フォームからご連絡ください<br>翌営業日までに返信します</p>
+      </div>
+      <div class="cta-option">
+        <div class="cta-option-icon">🖥️</div>
+        <h3>無料デモを予約する</h3>
+        <p>実際の画面を見ながら<br>専任スタッフがご案内します</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo">Trusst<span>o</span>r</div>
+        <p class="footer-info">日本正規代理店：株式会社ダイテック</p>
+      </div>
+      <div class="footer-links">
+        <a href="#">プライバシーポリシー</a>
+        <a href="#">特定商取引法に基づく表記</a>
+        <a href="#">運営会社</a>
+      </div>
+    </div>
+    <p class="footer-copy">© 2026 Trusstor Technologies Ltd. / Daitec Co., Ltd.</p>
+  </div>
+</footer>
+
+<script>
+// Header scroll effect
+const header = document.getElementById('header');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// FAQ toggle
+function toggleFaq(el) {
+  const item = el.parentElement;
+  const answer = item.querySelector('.faq-a');
+  const isActive = item.classList.contains('active');
+
+  // Close all
+  document.querySelectorAll('.faq-item').forEach(i => {
+    i.classList.remove('active');
+    i.querySelector('.faq-a').style.maxHeight = '0';
+  });
+
+  // Open clicked (if was closed)
+  if (!isActive) {
+    item.classList.add('active');
+    answer.style.maxHeight = answer.scrollHeight + 'px';
+  }
+}
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// Intersection Observer for fade-in
+const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -40px 0px' };
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('.issue-card, .step, .value-card, .feature-item, .impact-card, .onboard-step, .faq-item, .cta-option').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  observer.observe(el);
+});
+</script>
+
+</body>
+</html>
